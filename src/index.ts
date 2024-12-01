@@ -5,6 +5,10 @@ import pingRouter from './routes/pingRoute';
 import projectRoute from './routes/projectRoute';
 import reportRoute from './routes/reportRoute';
 import authenticate from './middleware/token';
+import { swaggerOptions } from '../swaggerConfig';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
 dotenv.config();
 
 const app: Express = express();
@@ -26,7 +30,13 @@ app.get('/', (req: Request, res: Response) => {
 		version: process.env.npm_package_version || 'unknown',
 	});
 });
+// Protected Routes
 app.use('/project', authenticate, projectRoute);
 app.use('/report', authenticate, reportRoute);
+
+// Swagger Docs routes
+// Swagger Setup
+const swaggerDocs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Ping for Health check
 app.use('/ping', pingRouter);

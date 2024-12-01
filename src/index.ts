@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import pingRouter from './routes/pingRoute';
 import projectRoute from './routes/projectRoute';
 import reportRoute from './routes/reportRoute';
-
+import authenticate from './middleware/token';
 dotenv.config();
 
 const app: Express = express();
@@ -26,7 +26,7 @@ app.get('/', (req: Request, res: Response) => {
 		version: process.env.npm_package_version || 'unknown',
 	});
 });
-app.use('/project', projectRoute);
-app.use('/report', reportRoute);
+app.use('/project', authenticate, projectRoute);
+app.use('/report', authenticate, reportRoute);
 // Ping for Health check
 app.use('/ping', pingRouter);

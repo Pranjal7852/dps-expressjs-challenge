@@ -1,7 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import { pingRouter } from './routes/pingRoute';
+import pingRouter from './routes/pingRoute';
+import projectRoute from './routes/projectRoute';
 
 dotenv.config();
 
@@ -24,6 +25,6 @@ app.get('/', (req: Request, res: Response) => {
 		version: process.env.npm_package_version || 'unknown',
 	});
 });
-
+app.use('/project', projectRoute);
 // Ping for Health check
 app.use('/ping', pingRouter);

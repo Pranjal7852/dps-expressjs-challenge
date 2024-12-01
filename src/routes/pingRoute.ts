@@ -8,4 +8,4 @@ pingRouter.get('/', (req: Request, res: Response) => {
 	});
 });
 
-export { pingRouter };
+export default pingRouter;

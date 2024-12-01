@@ -5,17 +5,13 @@ const db = new sqlite(path.resolve('./db/db.sqlite3'), {
 	fileMustExist: true,
 });
 
-function query(
-	sql: string,
-	params?: { [key: string]: string | number | undefined },
-) {
+// Changed the param type from object to Array to match with SQlite syntax that needs an Array
+function query(sql: string, params?: (string | number | undefined)[]) {
+	console.log('params', params);
 	return params ? db.prepare(sql).all(params) : db.prepare(sql).all();
 }
-
-function run(
-	sql: string,
-	params?: { [key: string]: string | number | undefined },
-) {
+// Changed the param type from object to Array to match with SQlite syntax that needs an Array
+function run(sql: string, params?: (string | number | undefined)[]) {
 	return params ? db.prepare(sql).run(params) : db.prepare(sql).run();
 }
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import dbService from '../services/db.service';
 
 interface Project {
-	id: number;
+	id: string;
 	name: string;
 	description: string;
 }

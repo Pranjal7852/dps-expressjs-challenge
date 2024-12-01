@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import pingRouter from './routes/pingRoute';
 import projectRoute from './routes/projectRoute';
+import reportRoute from './routes/reportRoute';
 
 dotenv.config();
 
@@ -26,5 +27,6 @@ app.get('/', (req: Request, res: Response) => {
 	});
 });
 app.use('/project', projectRoute);
+app.use('/report', reportRoute);
 // Ping for Health check
 app.use('/ping', pingRouter);

@@ -39,7 +39,7 @@ export const createReport = async (req: Request, res: Response) => {
 
 		if (!checkIfProjectExist(project_id)) {
 			return res.status(404).json({
-				error: `Project with id = ${project_id} not found Try Again`,
+				error: `Project with ${project_id} id not found, Try Again!`,
 			});
 		}
 
@@ -105,9 +105,9 @@ export const getReportsByProjectId = async (req: Request, res: Response) => {
 		]) as Report[];
 
 		if (reports.length === 0) {
-			return res
-				.status(404)
-				.json({ message: 'No reports found for this project ID' });
+			return res.status(404).json({
+				message: `No reports found for ${project_id} project ID`,
+			});
 		}
 
 		res.status(200).json({ reports });
@@ -196,7 +196,7 @@ export const deleteReport = async (req: Request, res: Response) => {
 		if (!id) {
 			return res.status(400).json({ error: 'Report ID is required' });
 		}
-
+		console.log('test', id);
 		const sql = 'DELETE FROM reports WHERE id = ?';
 		const result: DatabaseResult = dbService.run(sql, [id]);
 

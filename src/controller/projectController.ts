@@ -81,7 +81,7 @@ export const getProjectById = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		console.log('test', id);
-		// Validate ID
+
 		if (!id) {
 			return res.status(400).json({ error: 'Project ID is required' });
 		}
@@ -147,7 +147,6 @@ export const deleteProject = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 
-		// Validate ID
 		if (!id) {
 			return res.status(400).json({ error: 'Project ID is required' });
 		}

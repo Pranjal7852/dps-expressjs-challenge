@@ -5,6 +5,7 @@ import {
 	getReportById,
 	updateReport,
 	deleteReport,
+	getReportsByProjectId,
 } from '../controller/reportController';
 
 const reportRoute: Router = express.Router();
@@ -12,11 +13,15 @@ const reportRoute: Router = express.Router();
 reportRoute.post('/', createReport);
 // READ ROUTE
 reportRoute.get('/', getAllReports);
-// READ SPECIFIC PROJECT ROUTE
+// READ SPECIFIC REPORT ROUTE
 reportRoute.get('/:id', getReportById);
-// UPDATE SPECIFIC PROJECT ROUTE
+
+// READ SPECIFIC REPORT ROUTE
+reportRoute.get('/project/:project_id', getReportsByProjectId);
+
+// UPDATE SPECIFIC REPORT ROUTE
 reportRoute.put('/:id', updateReport);
-// DELETE SPECIFIC PROJECT ROUTE
+// DELETE SPECIFIC REPORT ROUTE
 reportRoute.delete('/:id', deleteReport);
 
 export default reportRoute;

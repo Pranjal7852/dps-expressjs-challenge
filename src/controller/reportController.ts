@@ -17,27 +17,29 @@ interface DatabaseResult {
 	changes?: number;
 }
 
-// Create a Project
+// This Function helps in treating project_id as a FOREIGN KEY
+function checkIfProjectExist(project_id: string): boolean {
+	const projectCheckSQL = 'SELECT id FROM projects WHERE id = ?';
+	const projectExists = dbService.query(projectCheckSQL, [
+		project_id,
+	]) as Project[];
+	return projectExists.length > 0;
+}
+// Create a Report
 export const createReport = async (req: Request, res: Response) => {
 	try {
 		const { text, project_id }: { text: string; project_id: string } =
 			req.body;
 
-		// Validate input
 		if (!text || !project_id) {
 			return res
 				.status(400)
 				.json({ error: 'Text and Project ID are required' });
 		}
 
-		const projectCheckSQL = 'SELECT id FROM projects WHERE id = ?';
-		const projectExists = dbService.query(projectCheckSQL, [
-			project_id,
-		]) as Project[];
-
-		if (projectExists.length === 0) {
+		if (!checkIfProjectExist(project_id)) {
 			return res.status(404).json({
-				error: `Project with id = ${project_id} not found Check Again`,
+				error: `Project with id = ${project_id} not found Try Again`,
 			});
 		}
 
@@ -46,7 +48,6 @@ export const createReport = async (req: Request, res: Response) => {
 			'SELECT id FROM reports ORDER BY id DESC LIMIT 1';
 		const lastReport = dbService.query(fetchlastReportSQL) as Report[];
 
-		// Determine the new report ID
 		const newId =
 			lastReport.length > 0 && lastReport[0].id
 				? Number(lastReport[0].id) + 1
@@ -58,9 +59,8 @@ export const createReport = async (req: Request, res: Response) => {
 			);
 		}
 
-		// Insert the new report into the database
 		const insertSQL =
-			'INSERT INTO reports (id, text, project_id) VALUES (?, ?, ?)';
+			'INSERT INTO reports (id, text, projectid) VALUES (?, ?, ?)';
 		dbService.run(insertSQL, [newId.toString(), text, project_id]);
 
 		res.status(201).json({
@@ -93,12 +93,37 @@ export const getAllReports = async (req: Request, res: Response) => {
 	}
 };
 
+// Get all Reports with the same Prokject ID
+export const getReportsByProjectId = async (req: Request, res: Response) => {
+	try {
+		let { project_id } = req.params;
+		project_id = String(project_id);
+
+		const fetchReportsSQL = 'SELECT * FROM reports WHERE projectid = ?';
+		const reports = dbService.query(fetchReportsSQL, [
+			project_id,
+		]) as Report[];
+
+		if (reports.length === 0) {
+			return res
+				.status(404)
+				.json({ message: 'No reports found for this project ID' });
+		}
+
+		res.status(200).json({ reports });
+	} catch (error) {
+		console.error('Error fetching reports:', error);
+		res.status(500).json({
+			error: 'Error fetching reports',
+			details: error instanceof Error ? error.message : 'Unknown error',
+		});
+	}
+};
+
 // Get a report by ID
 export const getReportById = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		console.log('test', id);
-		// Validate ID
 		if (!id) {
 			return res.status(400).json({ error: 'report ID is required' });
 		}
@@ -126,17 +151,22 @@ export const updateReport = async (req: Request, res: Response) => {
 		const { id } = req.params;
 		const { text, project_id }: Report = req.body;
 
-		// Validate input
 		if (!id) {
 			return res.status(400).json({ error: 'Report ID is required' });
 		}
 		if (!text || !project_id) {
 			return res
 				.status(400)
-				.json({ error: 'Name and description are required' });
+				.json({ error: 'text and project_id are required' });
 		}
 
-		const sql = 'UPDATE reports SET name = ?, description = ? WHERE id = ?';
+		if (!checkIfProjectExist(project_id)) {
+			return res.status(404).json({
+				error: `Project with ${project_id} id not found, Try Again!`,
+			});
+		}
+
+		const sql = 'UPDATE reports SET text = ?, projectid = ? WHERE id = ?';
 
 		const result: DatabaseResult = dbService.run(sql, [
 			text,
@@ -163,7 +193,6 @@ export const deleteReport = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 
-		// Validate ID
 		if (!id) {
 			return res.status(400).json({ error: 'Report ID is required' });
 		}
@@ -191,4 +220,5 @@ export default {
 	getReportById,
 	updateReport,
 	deleteReport,
+	getReportsByProjectId,
 };

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import dbService from '../services/db.service';
 
 interface Project {
-	id?: number;
+	id: number;
 	name: string;
 	description: string;
 }
@@ -14,7 +14,8 @@ interface DatabaseResult {
 // Create a Project
 export const createProject = async (req: Request, res: Response) => {
 	try {
-		const { name, description }: Project = req.body;
+		const { name, description }: { name: string; description: string } =
+			req.body;
 
 		// Validate input
 		if (!name || !description) {
@@ -23,10 +24,34 @@ export const createProject = async (req: Request, res: Response) => {
 				.json({ error: 'Name and description are required' });
 		}
 
-		const sql = 'INSERT INTO projects (name, description) VALUES (?, ?)';
+		// Fetch the last project ID from the database to account for AUTO-INCREMENT feature in DB
+		const fetchLastProjectSQL =
+			'SELECT id FROM projects ORDER BY id DESC LIMIT 1';
+		const lastProject = dbService.query(fetchLastProjectSQL) as Project[];
 
-		dbService.run(sql, [name, description]);
-		res.status(201).json({ message: 'Project created successfully' });
+		// Determine the new project ID
+		const newId =
+			lastProject.length > 0 && lastProject[0].id
+				? Number(lastProject[0].id) + 1
+				: 1;
+
+		if (isNaN(newId)) {
+			throw new Error(
+				'Invalid ID value encountered while calculating new ID',
+			);
+		}
+
+		// Insert the new project into the database
+		const insertSQL =
+			'INSERT INTO projects (id, name, description) VALUES (?, ?, ?)';
+		dbService.run(insertSQL, [newId.toString(), name, description]);
+
+		res.status(201).json({
+			message: 'Project created successfully in the Database',
+			id: newId,
+			name: name,
+			discription: description,
+		});
 	} catch (error) {
 		console.error('Error creating project:', error);
 		res.status(500).json({

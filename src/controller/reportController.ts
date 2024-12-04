@@ -25,6 +25,33 @@ function checkIfProjectExist(project_id: string): boolean {
 	]) as Project[];
 	return projectExists.length > 0;
 }
+// This function search an array of object with repeated text repeating more than 3 times SPECIAL CASE :-)
+function findReportsWithRepeatedWords(reports: { id: string; text: string }[]) {
+	const reportsWithRepeatedWords = [];
+
+	for (const report of reports) {
+		const wordCount: Record<string, number> = {};
+		const words = report.text.toLowerCase().split(/\s+/);
+
+		for (const word of words) {
+			wordCount[word] = (wordCount[word] || 0) + 1;
+		}
+
+		const repeatedWords = Object.entries(wordCount)
+			.filter(([unused, count]) => count >= 3)
+			.map(([word]) => word);
+
+		if (repeatedWords.length > 0) {
+			reportsWithRepeatedWords.push({
+				id: report.id,
+				text: report.text,
+				repeatedWords,
+			});
+		}
+	}
+
+	return reportsWithRepeatedWords;
+}
 // Create a Report
 export const createReport = async (req: Request, res: Response) => {
 	try {
@@ -225,6 +252,24 @@ export const deleteReport = async (req: Request, res: Response) => {
 	}
 };
 
+export const getReportsWithRepeatedWords = async (
+	req: Request,
+	res: Response,
+) => {
+	try {
+		const sql = 'SELECT id, text FROM reports';
+		const reports = dbService.query(sql) as { id: string; text: string }[];
+		console.log('test', reports);
+		const reportsWithRepeatedWords = findReportsWithRepeatedWords(reports);
+		res.status(200).json(reportsWithRepeatedWords);
+	} catch (error) {
+		console.error('Error fetching reports with repeated words:', error);
+		res.status(500).json({
+			error: 'Error fetching reports with repeated words',
+		});
+	}
+};
+
 export default {
 	createReport,
 	getAllReports,
@@ -232,4 +277,5 @@ export default {
 	updateReport,
 	deleteReport,
 	getReportsByProjectId,
+	getReportsWithRepeatedWords,
 };

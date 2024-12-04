@@ -133,7 +133,7 @@ projectRoute.post('/', createProject);
 // READ SPECIFIC PROJECT ROUTE
 /**
  * @swagger
- * /project/{id}:
+ * /project/id/{id}:
  *   get:
  *     summary: Get a project by ID
  *     description: Retrieves the details of a specific project by its ID.
@@ -202,7 +202,7 @@ projectRoute.post('/', createProject);
  *                   type: string
  *                   example: "Database connection error"
  */
-projectRoute.get('/:id', getProjectById);
+projectRoute.get('id/:id', getProjectById);
 // UPDATE SPECIFIC PROJECT ROUTE
 /**
  * @swagger

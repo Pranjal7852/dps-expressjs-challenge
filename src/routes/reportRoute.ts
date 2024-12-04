@@ -6,6 +6,7 @@ import {
 	updateReport,
 	deleteReport,
 	getReportsByProjectId,
+	getReportsWithRepeatedWords,
 } from '../controller/reportController';
 
 /**
@@ -109,7 +110,7 @@ reportRoute.post('/', createReport);
 // READ SPECIFIC REPORT ROUTE
 /**
  * @swagger
- * /report/{id}:
+ * /report/id/{id}:
  *   get:
  *     summary: Get report by ID
  *     description: Retrieves a single report based on its ID.
@@ -153,7 +154,7 @@ reportRoute.post('/', createReport);
  *       '500':
  *         description: Error fetching the report
  */
-reportRoute.get('/:id', getReportById);
+reportRoute.get('id/:id', getReportById);
 // READ ALL REPORT BASED ON PROJECT ID
 /**
  * @swagger
@@ -335,7 +336,47 @@ reportRoute.patch('/:id', updateReport);
  *         description: Error deleting the report
  */
 reportRoute.delete('/:id', deleteReport);
-
+/**
+ * @swagger
+ * /report/repeated:
+ *   get:
+ *     summary: Retrieve reports with repeated words
+ *     description: Fetches all reports from the database and filters those containing repeated words in text atleast 3 times.
+ *     security:
+ *       - TokenAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of reports with repeated words.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The ID of the report.
+ *                   text:
+ *                     type: string
+ *                     description: The content of the report.
+ *                   repeatedWords:
+ *                     type: array
+ *                     description: An array of repated words found in the text of that report.
+ *       500:
+ *         description: An error occurred while fetching the reports.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message explaining the failure.
+ *     tags:
+ *       - Special
+ */
+reportRoute.get('/repeated', getReportsWithRepeatedWords);
 /**
  * @swagger
  * components:

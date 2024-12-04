@@ -149,30 +149,41 @@ export const getReportById = async (req: Request, res: Response) => {
 export const updateReport = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		const { text, project_id }: Report = req.body;
-
+		const { text, project_id }: Partial<Report> = req.body; // Allow partial updates
+		console.log('test', req.body);
 		if (!id) {
 			return res.status(400).json({ error: 'Report ID is required' });
 		}
-		if (!text || !project_id) {
-			return res
-				.status(400)
-				.json({ error: 'text and project_id are required' });
-		}
 
-		if (!checkIfProjectExist(project_id)) {
-			return res.status(404).json({
-				error: `Project with ${project_id} id not found, Try Again!`,
+		if (!text && !project_id) {
+			return res.status(400).json({
+				error: 'At least one field (text or project_id) is required',
 			});
 		}
 
-		const sql = 'UPDATE reports SET text = ?, projectid = ? WHERE id = ?';
+		if (project_id && !checkIfProjectExist(project_id)) {
+			return res.status(404).json({
+				error: `Project with ID ${project_id} not found. Try again!`,
+			});
+		}
 
-		const result: DatabaseResult = dbService.run(sql, [
-			text,
-			project_id,
-			id,
-		]);
+		const updates: string[] = [];
+		const values: (string | number | undefined)[] = [];
+
+		if (text) {
+			updates.push('text = ?');
+			values.push(text);
+		}
+		if (project_id) {
+			updates.push('projectid = ?');
+			values.push(project_id);
+		}
+
+		values.push(id);
+
+		const sql = `UPDATE reports SET ${updates.join(', ')} WHERE id = ?`;
+
+		const result: DatabaseResult = dbService.run(sql, values);
 
 		if (result.changes === 0) {
 			return res.status(404).json({ message: 'Report not found' });

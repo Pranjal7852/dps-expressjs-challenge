@@ -207,7 +207,7 @@ projectRoute.get('/:id', getProjectById);
 /**
  * @swagger
  * /project/{id}:
- *   put:
+ *   patch:
  *     summary: Update a project
  *     description: Updates the details of a specific project by its ID.
  *     tags: [Project]
@@ -279,7 +279,7 @@ projectRoute.get('/:id', getProjectById);
  *                   type: string
  *                   example: "Database connection error"
  */
-projectRoute.put('/:id', updateProject);
+projectRoute.patch('/:id', updateProject);
 // DELETE SPECIFIC PROJECT ROUTE
 /**
  * @swagger

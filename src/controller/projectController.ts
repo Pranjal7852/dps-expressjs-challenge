@@ -107,26 +107,37 @@ export const getProjectById = async (req: Request, res: Response) => {
 export const updateProject = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
-		const { name, description }: Project = req.body;
+		const { name, description }: Partial<Project> = req.body;
 
 		// Validate input
 		if (!id) {
 			return res.status(400).json({ error: 'Project ID is required' });
 		}
-		if (!name || !description) {
-			return res
-				.status(400)
-				.json({ error: 'Name and description are required' });
+
+		if (!name && !description) {
+			return res.status(400).json({
+				error: 'At least one field (name or description) is required',
+			});
 		}
 
-		const sql =
-			'UPDATE projects SET name = ?, description = ? WHERE id = ?';
+		// Build the SQL query dynamically
+		const updates: string[] = [];
+		const values: (string | number | undefined)[] = [];
 
-		const result: DatabaseResult = dbService.run(sql, [
-			name,
-			description,
-			id,
-		]);
+		if (name) {
+			updates.push('name = ?');
+			values.push(name);
+		}
+		if (description) {
+			updates.push('description = ?');
+			values.push(description);
+		}
+
+		values.push(id); // Add `id` as the last parameter
+
+		const sql = `UPDATE projects SET ${updates.join(', ')} WHERE id = ?`;
+
+		const result: DatabaseResult = dbService.run(sql, values);
 
 		if (result.changes === 0) {
 			return res.status(404).json({ message: 'Project not found' });

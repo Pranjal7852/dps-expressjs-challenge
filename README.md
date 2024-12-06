@@ -15,17 +15,10 @@ The application provides a RESTful API for managing company projects and their a
 
 This project came with a custom database schema with projects and reports tables. What I found was there are no foreign key relationships defined between them, and id fields are stored as text rather than auto-incrementing integers. So I implemented these features to maintain the schema
 
-# 1. Custom Relationship Handling
+1. Custom Relationship Handling - Due to the lack of foreign key constraints, a custom function was implemented to maintain the relationship between the projects and reports tables during data insertion.
 
-Due to the lack of foreign key constraints, a custom function was implemented to maintain the relationship between the projects and reports tables during data insertion.
-
-# 2. ID Management
-
-id fields are stored as text. A custom script is used to fetch the last ID and auto-increment it by 1 for new entries and convert back it to string.
-
-# 3. Schema Preservation
-
-The existing database schema is kept intact to avoid altering the original structure while ensuring the project’s functionality.
+2. ID Management - Id fields are stored as text. A custom script is used to fetch the last ID and auto-increment it by 1 for new entries and convert back it to string.
+3. Schema Preservation - The existing database schema is kept intact to avoid altering the original structure while ensuring the project’s functionality.
 
 ## Prerequisites
 

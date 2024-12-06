@@ -2,6 +2,9 @@
 
 ## Overview
 
+<img width="1474" alt="image" src="https://github.com/user-attachments/assets/97849e5f-d4fb-4f13-8d47-318eb2e28b0e">
+
+
 This is a backend application developed for the Digital Product School (DPS) coding challenge. The project is a web application built with TypeScript and Express.js, focusing on project and report management with a SQLite database.
 
 ## Project Description
@@ -15,8 +18,9 @@ The application provides a RESTful API for managing company projects and their a
 
 This project came with a custom database schema with projects and reports tables. What I found was there are no foreign key relationships defined between them, and id fields are stored as text rather than auto-incrementing integers. So I implemented these features to maintain the schema
 
-1. Custom Relationship Handling - Due to the lack of foreign key constraints, a custom function was implemented to maintain the relationship between the projects and reports tables during data insertion.
+![image](https://github.com/user-attachments/assets/b1463471-7f70-4b02-b00f-3310be04e914)
 
+1. Custom Relationship Handling - Due to the lack of foreign key constraints, a custom function was implemented to maintain the relationship between the projects and reports tables during data insertion.
 2. ID Management - Id fields are stored as text. A custom script is used to fetch the last ID and auto-increment it by 1 for new entries and convert back it to string.
 3. Schema Preservation - The existing database schema is kept intact to avoid altering the original structure while ensuring the project’s functionality.
 
@@ -84,6 +88,8 @@ This project came with a custom database schema with projects and reports tables
 -   `GET /report/repeated`: Retrieve reports with words appearing at least three times
 
 ## Authentication
+
+<img width="654" alt="image" src="https://github.com/user-attachments/assets/39706835-7267-4839-82dc-97e209c7f37b">
 
 authentication is implemented using a hardcoded token:
 
